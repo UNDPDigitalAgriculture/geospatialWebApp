@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/geospatialWebApp/static/css/main.e16faf15.css",
+    "main.js": "/geospatialWebApp/static/js/main.cfa6cb99.js",
+    "static/media/pic.JPG": "/geospatialWebApp/static/media/pic.17750de95dd9a5372dac.JPG",
+    "index.html": "/geospatialWebApp/index.html",
+    "main.e16faf15.css.map": "/geospatialWebApp/static/css/main.e16faf15.css.map",
+    "main.cfa6cb99.js.map": "/geospatialWebApp/static/js/main.cfa6cb99.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e16faf15.css",
+    "static/js/main.cfa6cb99.js"
+  ]
+}
