@@ -1,58 +1,46 @@
-import React, { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { useState } from 'react';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import EditProvider from '../src/components/context/EditMode'
+
 import Map from './components/Map';
-import Compare from './components/Compare';
-import Menu from './components/Menu';
-import Panel from './components/Panel';
-
-import { initializeApp } from "firebase/app";
-
-import SidebarProvider from './context/sidebar';
-
-
-
+import Sidebar from './components/Sidebar';
+import './App.css';
 
 function App() {
 
-  const [state, setState] = useState({
-    isPaneOpen: false,
-    isPaneOpenLeft: false,
-  });
 
-  const firebaseConfig = {
+  const [stats, setStats] = useState('');
+  const [password, setPassword] = useState('')
 
-    apiKey: "AIzaSyANvYurLON2pl8b_XO3i3EuvYA-N4TrssM",
-    authDomain: "agtest-cb996.firebaseapp.com",
-    projectId: "agtest-cb996",
-    storageBucket: "agtest-cb996.appspot.com",
-    messagingSenderId: "720408516443",
-    appId: "1:720408516443:web:5a94d6fa4fa4c85c4eac7e",
-    measurementId: "G-RYK6SVH6SE"
-  };
+  const pull_data = (data) => {
+    //console.log(data)
+    setStats(data)
+  }
+
+  const handleChange = (e, v) => {
+    console.log(e.target.value);
+    setPassword(e.target.value)
+  }
 
 
-  const app = initializeApp(firebaseConfig);
+
 
   return (
-    <SidebarProvider>
-      <div className="App">
-        <Menu />
-        <Panel />
-        <div className='main'>
-          <Main />
-        </div>
-      </div>
-    </SidebarProvider>
-  );
+
+    password != `farms` ?
+      <TextField onChange={handleChange}></TextField>
+
+      : <EditProvider>
+        <div className="App" >
+          <Sidebar data={stats} />
+          <Map func={pull_data} />
+        </div >
+      </EditProvider>
+
+
+  )
+
 }
-
-const Main = () => (
-  <Routes>
-    <Route path='/' element={<Map />}></Route>
-    <Route path='/explore' element={<Map />}></Route>
-    <Route path='/compare' element={<Compare />}></Route>
-  </Routes>
-);
-
 
 export default App;
