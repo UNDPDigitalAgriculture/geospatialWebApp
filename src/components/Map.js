@@ -13,7 +13,7 @@ import mask from '@turf/mask';
 import { colorsRgba, colors } from '../utils/colors';
 import Slider from '@mui/material/Slider';
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-import gjn from './newfarms.json';
+//import gjn from './newfarms.json';
 import img from './pic.JPG'
 import { EditContext } from './context/EditMode';
 import { Menu } from '@mui/material';
@@ -253,7 +253,7 @@ const Map = (props) => {
     }, [])
 
 
-    const calculateTotalArea = async () => {
+    const calculateTotalArea = async (gjn) => {
         let totalArea = 0
         gjn.features.forEach((x) => {
             const area1 = area(x)
@@ -263,7 +263,7 @@ const Map = (props) => {
         return await totalArea
     }
 
-    const returnGeojsonStats = () => {
+    const returnGeojsonStats = (gjn) => {
         const output = {}
         const wheat = gjn.features.filter((x) => x.properties.crop_id === 1);
         const barley = gjn.features.filter((x) => x.properties.crop_id === 2);
@@ -330,7 +330,7 @@ const Map = (props) => {
         if (totalArea) {
             props.func([gjn.features.length, totalArea, dataSet, selectedFarm, output])
         } else {
-            calculateTotalArea().then((x) => {
+            calculateTotalArea(gjn).then((x) => {
                 console.log(x.toFixed(0));
                 setTotalArea(x.toFixed(0))
                 props.func([gjn.features.length, x.toFixed(0), dataSet, selectedFarm, output])
@@ -342,77 +342,86 @@ const Map = (props) => {
     }
 
     useEffect(() => {
-        returnGeojsonStats()
+        //returnGeojsonStats()
     }, [selectedFarm])
 
 
     const addGeojson = () => {
-        returnGeojsonStats();
-        const layers = map.current.getStyle().layers;
-        // Find the index of the first symbol layer in the map style.
-        let firstSymbolId;
-        for (const layer of layers) {
-            if (layer.type === 'symbol') {
-                firstSymbolId = layer.id
-                setFirstSymbol(layer.id);
-                break;
-            }
-        }
-        //gjn.filter()
+
+        fetch('https://undpdigitalagriculture.github.io/datastore/newfarms.json')
+            .then((res) => res.json())
+            .then((data) => {
+                returnGeojsonStats(data);
 
 
-        map.current.addSource('farms', {
-            type: 'geojson',
-            data: gjn
 
-        })
-
-        //console.log(gjn);
-        map.current.addLayer(
-            {
-                id: 'farms',
-                type: 'fill',
-                source: 'farms',
-                'paint': {
-
-                    'fill-color': [
-                        'interpolate',
-                        ['linear'],
-                        ['get', 'crop_id'],
-                        1, colors[0],
-                        2, colors[1],
-                        3, colors[2],
-                        4, colors[3],
-                        5, colors[4],
-                    ],
-                    'fill-opacity': opacity,
-
+                //returnGeojsonStats();
+                const layers = map.current.getStyle().layers;
+                // Find the index of the first symbol layer in the map style.
+                let firstSymbolId;
+                for (const layer of layers) {
+                    if (layer.type === 'symbol') {
+                        firstSymbolId = layer.id
+                        setFirstSymbol(layer.id);
+                        break;
+                    }
                 }
-            }, firstSymbolId
-        );
+                //gjn.filter()
 
-        map.current.addLayer(
-            {
-                id: 'farms-lines',
-                type: 'line',
-                source: 'farms',
-                'paint': {
-                    'line-width': 1.5,
-                    'line-color': [
-                        'interpolate',
-                        ['linear'],
-                        ['get', 'crop_id'],
-                        1, colors[0],
-                        2, colors[1],
-                        3, colors[2],
-                        4, colors[3],
-                        5, colors[4],
-                    ],
-                    'line-opacity': 1,
 
-                }
-            }, firstSymbolId
-        );
+                map.current.addSource('farms', {
+                    type: 'geojson',
+                    data: data
+
+                })
+
+                //console.log(gjn);
+                map.current.addLayer(
+                    {
+                        id: 'farms',
+                        type: 'fill',
+                        source: 'farms',
+                        'paint': {
+
+                            'fill-color': [
+                                'interpolate',
+                                ['linear'],
+                                ['get', 'crop_id'],
+                                1, colors[0],
+                                2, colors[1],
+                                3, colors[2],
+                                4, colors[3],
+                                5, colors[4],
+                            ],
+                            'fill-opacity': opacity,
+
+                        }
+                    }, firstSymbolId
+                );
+
+                map.current.addLayer(
+                    {
+                        id: 'farms-lines',
+                        type: 'line',
+                        source: 'farms',
+                        'paint': {
+                            'line-width': 1.5,
+                            'line-color': [
+                                'interpolate',
+                                ['linear'],
+                                ['get', 'crop_id'],
+                                1, colors[0],
+                                2, colors[1],
+                                3, colors[2],
+                                4, colors[3],
+                                5, colors[4],
+                            ],
+                            'line-opacity': 1,
+
+                        }
+                    }, firstSymbolId
+                );
+            })
     }
 
     const handleChange = (e, v) => {
